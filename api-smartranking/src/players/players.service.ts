@@ -8,12 +8,12 @@ export class PlayersService {
   private players: Player[] = [];
   private readonly logger: Logger = new Logger('PlayersService');
 
-  createPlayer(createPlayerDto: CreatePlayerDto): Player {
+  create(createPlayerDto: CreatePlayerDto): Player {
     this.logger.log(`createPlayerDto: ${JSON.stringify(createPlayerDto)}`);
 
     const { phoneNumber, email, name } = createPlayerDto;
 
-    return {
+    const newPlayer: Player = {
       _id: uuid(),
       phoneNumber,
       email,
@@ -22,5 +22,27 @@ export class PlayersService {
       ranking: 'A',
       rankingPosition: 1,
     };
+
+    this.players.push(newPlayer);
+
+    return newPlayer;
+  }
+
+  update(updatePlayerDto: CreatePlayerDto): Player {
+    this.logger.log(`updatePlayerDto: ${JSON.stringify(updatePlayerDto)}`);
+
+    const foundedPlayer = this.players.find(
+      (player) => player.email === updatePlayerDto.email,
+    );
+    if (foundedPlayer) {
+      Object.assign(foundedPlayer, updatePlayerDto);
+      this.players[this.players.indexOf(foundedPlayer)] = foundedPlayer;
+    }
+
+    return foundedPlayer;
+  }
+
+  findAll(): Player[] {
+    return this.players;
   }
 }
