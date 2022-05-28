@@ -14,10 +14,10 @@ export class PlayersService {
     return this.playerModel.find().exec();
   }
 
-  async findOne(email: string): Promise<Player> {
-    const foundedPlayer = this.playerModel.findOne({ email }).exec();
+  async findOne(id: string): Promise<Player> {
+    const foundedPlayer = this.playerModel.findOne({ _id: id }).exec();
     if (!foundedPlayer) {
-      throw new NotFoundException(`Player with e-mail ${email} not found`);
+      throw new NotFoundException(`Player with id ${id} not found`);
     }
     return foundedPlayer;
   }
@@ -29,10 +29,10 @@ export class PlayersService {
     return createdPlayer;
   }
 
-  async update(updatePlayerDto: CreatePlayerDto): Promise<Player> {
+  async update(id: string, updatePlayerDto: CreatePlayerDto): Promise<Player> {
     return this.playerModel
       .findOneAndUpdate(
-        { email: updatePlayerDto.email },
+        { _id: id },
         {
           $set: updatePlayerDto,
         },
@@ -40,7 +40,7 @@ export class PlayersService {
       .exec();
   }
 
-  async delete(email: string): Promise<any> {
-    return this.playerModel.remove({ email }).exec();
+  async delete(id: string): Promise<any> {
+    return this.playerModel.remove({ _id: id }).exec();
   }
 }
