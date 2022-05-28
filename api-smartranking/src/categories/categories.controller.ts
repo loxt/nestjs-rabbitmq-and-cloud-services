@@ -42,4 +42,12 @@ export class CategoriesController {
   ): Promise<Category> {
     return this.categoriesService.update(name, updateCategoryDto);
   }
+
+  @Post('/:name/players/:playerId')
+  async addPlayerToCategory(
+    @Param('name') name: string,
+    @Param('playerId') playerId: string,
+  ): Promise<void> {
+    this.categoriesService.addPlayerToCategory(name, playerId);
+  }
 }

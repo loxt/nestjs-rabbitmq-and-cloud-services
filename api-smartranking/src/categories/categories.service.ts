@@ -16,7 +16,7 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const categoryAlreadyExists = await this.findByName(createCategoryDto.name);
+    const categoryAlreadyExists = await this.findOne(createCategoryDto.name);
 
     if (categoryAlreadyExists) {
       throw new BadRequestException(
@@ -28,16 +28,15 @@ export class CategoriesService {
     return createdCategory.save();
   }
 
-  async findByName(name: string): Promise<Category> {
-    return this.categoryModel.findOne({ name }).exec();
-  }
-
   async findAll(): Promise<Category[]> {
-    return this.categoryModel.find().exec();
+    return this.categoryModel.find().populate('players').exec();
   }
 
   async findOne(name: string): Promise<Category> {
-    const foundedCategory = await this.categoryModel.findOne({ name }).exec();
+    const foundedCategory = await this.categoryModel
+      .findOne({ name })
+      .populate('players')
+      .exec();
 
     if (!foundedCategory) {
       throw new NotFoundException(`Category with name ${name} not found`);
@@ -53,6 +52,21 @@ export class CategoriesService {
     if (!foundedCategory) {
       throw new NotFoundException(`Category with name ${name} not found`);
     }
+    return foundedCategory;
+  }
+
+  async addPlayerToCategory(name: string, playerId: string) {
+    const foundedCategory = await this.findOne(name);
+
+    if (!foundedCategory) {
+      throw new NotFoundException(`Category with name ${name} not found`);
+    }
+
+    foundedCategory.players.push(playerId as any);
+
+    await this.categoryModel
+      .findOneAndUpdate({ name }, { $set: foundedCategory })
+      .exec();
     return foundedCategory;
   }
 }
