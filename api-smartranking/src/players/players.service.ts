@@ -37,9 +37,7 @@ export class PlayersService {
     }
 
     const createdPlayer = await this.playerModel.create(createPlayerDto);
-    await createdPlayer.save();
-
-    return createdPlayer;
+    return createdPlayer.save();
   }
 
   async update(id: string, updatePlayerDto: UpdatePlayerDto): Promise<Player> {
