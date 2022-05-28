@@ -7,6 +7,7 @@ import { CreatePlayerDto } from './dtos/create-player.dto';
 import { Player } from './interfaces/player.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UpdatePlayerDto } from './dtos/update-player.dto';
 
 @Injectable()
 export class PlayersService {
@@ -41,7 +42,7 @@ export class PlayersService {
     return createdPlayer;
   }
 
-  async update(id: string, updatePlayerDto: CreatePlayerDto): Promise<Player> {
+  async update(id: string, updatePlayerDto: UpdatePlayerDto): Promise<Player> {
     const foundedPlayer = await this.findOne(id);
     if (!foundedPlayer) {
       throw new NotFoundException(`Player with id ${id} not found`);
@@ -62,10 +63,6 @@ export class PlayersService {
   }
 
   async findByEmail(email: string): Promise<Player> {
-    const foundedPlayer = await this.playerModel.findOne({ email }).exec();
-    if (!foundedPlayer) {
-      throw new NotFoundException(`Player with email ${email} not found`);
-    }
-    return foundedPlayer;
+    return this.playerModel.findOne({ email }).exec();
   }
 }

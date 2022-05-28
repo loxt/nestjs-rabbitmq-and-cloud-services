@@ -2,13 +2,12 @@ import { Schema } from 'mongoose';
 
 export const PlayerModel = new Schema(
   {
-    phoneNumber: {
-      type: String,
-      unique: true,
-    },
     email: {
       type: String,
       unique: true,
+    },
+    phoneNumber: {
+      type: String,
     },
     name: String,
     ranking: String,
