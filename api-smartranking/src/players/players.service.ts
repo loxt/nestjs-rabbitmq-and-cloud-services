@@ -53,4 +53,9 @@ export class PlayersService {
     }
     return foundedPlayer;
   }
+
+  delete(email: string): void {
+    const foundedPlayer = this.findOne(email);
+    this.players.splice(this.players.indexOf(foundedPlayer), 1);
+  }
 }
