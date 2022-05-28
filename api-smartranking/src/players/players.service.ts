@@ -52,6 +52,9 @@ export class PlayersService {
         {
           $set: updatePlayerDto,
         },
+        {
+          new: true,
+        },
       )
       .exec();
   }
