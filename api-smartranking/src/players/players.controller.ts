@@ -6,11 +6,14 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreatePlayerDto } from './dtos/create-player.dto';
 import { PlayersService } from './players.service';
 
 @Controller('api/v1/players')
+@UsePipes(ValidationPipe)
 export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
