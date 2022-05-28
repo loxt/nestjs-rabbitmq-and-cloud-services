@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { CreatePlayerDto } from './dtos/create-player.dto';
 import { PlayersService } from './players.service';
 
@@ -14,6 +14,11 @@ export class PlayersController {
   @Get()
   async findAll() {
     return this.playersService.findAll();
+  }
+
+  @Get()
+  async findOne(@Query('email') email: string) {
+    return this.playersService.findOne(email);
   }
 
   @Patch()
