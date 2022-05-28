@@ -47,7 +47,7 @@ export class CategoriesController {
   async addPlayerToCategory(
     @Param('name') name: string,
     @Param('playerId') playerId: string,
-  ): Promise<void> {
-    this.categoriesService.addPlayerToCategory(name, playerId);
+  ): Promise<Category> {
+    return this.categoriesService.addPlayerToCategory(name, playerId);
   }
 }

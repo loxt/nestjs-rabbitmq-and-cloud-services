@@ -8,15 +8,19 @@ import { Model } from 'mongoose';
 import { Category } from './interfaces/category.interface';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { PlayersService } from '../players/players.service';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel('Category') private readonly categoryModel: Model<Category>,
+    private readonly playerService: PlayersService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const categoryAlreadyExists = await this.findOne(createCategoryDto.name);
+    const categoryAlreadyExists = await this.categoryModel
+      .findOne({ name: createCategoryDto.name })
+      .exec();
 
     if (categoryAlreadyExists) {
       throw new BadRequestException(
@@ -55,18 +59,32 @@ export class CategoriesService {
     return foundedCategory;
   }
 
-  async addPlayerToCategory(name: string, playerId: string) {
+  async addPlayerToCategory(name: string, playerId: string): Promise<Category> {
     const foundedCategory = await this.findOne(name);
 
     if (!foundedCategory) {
       throw new NotFoundException(`Category with name ${name} not found`);
     }
 
+    await this.playerService.findOne(playerId);
+
+    const playerAlreadyInCategory = await this.categoryModel
+      .find({ name })
+      .where('players')
+      .in([playerId])
+      .exec();
+
+    if (playerAlreadyInCategory.length > 0) {
+      throw new BadRequestException(
+        `Player with id ${playerId} already in category ${name}`,
+      );
+    }
+
     foundedCategory.players.push(playerId as any);
 
-    await this.categoryModel
-      .findOneAndUpdate({ name }, { $set: foundedCategory })
+    return this.categoryModel
+      .findOneAndUpdate({ name }, { $set: foundedCategory }, { new: true })
+      .populate('players')
       .exec();
-    return foundedCategory;
   }
 }

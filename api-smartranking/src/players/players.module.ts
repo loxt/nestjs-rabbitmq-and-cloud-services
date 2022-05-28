@@ -15,5 +15,6 @@ import { PlayerModel } from './models/player.model';
   ],
   controllers: [PlayersController],
   providers: [PlayersService],
+  exports: [PlayersService],
 })
 export class PlayersModule {}
