@@ -12,13 +12,11 @@ export class PlayersController {
   }
 
   @Get()
-  async findAll() {
+  async findAll(@Query('email') email: string) {
+    if (email) {
+      return this.playersService.findOne(email);
+    }
     return this.playersService.findAll();
-  }
-
-  @Get()
-  async findOne(@Query('email') email: string) {
-    return this.playersService.findOne(email);
   }
 
   @Patch()
