@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-export const PlayerSchema = new Schema(
+export const PlayerModel = new Schema(
   {
     phoneNumber: {
       type: String,
