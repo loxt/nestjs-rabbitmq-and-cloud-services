@@ -37,13 +37,19 @@ export class ChallengesService {
       throw new BadRequestException('Requester must be in the match');
     }
 
-    await this.categoriesService.findPlayerCategory(
+    const requesterCategory = await this.categoriesService.findPlayerCategory(
       createChallengeDto.requester as unknown as string,
     );
 
+    if (!requesterCategory) {
+      throw new BadRequestException(
+        `Requester with id ${createChallengeDto.requester} is'nt in a category.`,
+      );
+    }
+
     // create the challenge
     const challenge = await this.challengeModel.create(createChallengeDto);
-    challenge.category = 'challenge';
+    challenge.category = requesterCategory.name;
     challenge.challengeRequestDate = new Date();
     challenge.status = ChallengeStatus.PENDING;
     return challenge.save();
