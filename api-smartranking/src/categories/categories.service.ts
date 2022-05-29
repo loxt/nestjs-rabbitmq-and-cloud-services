@@ -48,6 +48,22 @@ export class CategoriesService {
     return foundedCategory;
   }
 
+  async findPlayerCategory(playerId: string): Promise<Category> {
+    const foundedCategory = await this.categoryModel
+      .findOne()
+      .where('players')
+      .in([playerId])
+      .populate('players')
+      .exec();
+
+    if (!foundedCategory) {
+      throw new BadRequestException(
+        `Player with id ${playerId} is'nt in a category.`,
+      );
+    }
+    return foundedCategory;
+  }
+
   async update(name: string, updateCategoryDto: UpdateCategoryDto) {
     const foundedCategory = await this.categoryModel
       .findOneAndUpdate({ name }, updateCategoryDto, { new: true })

@@ -8,12 +8,14 @@ import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Challenge } from './interfaces/challenge.interface';
+import { Challenge, ChallengeStatus } from './interfaces/challenge.interface';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class ChallengesService {
   constructor(
     private readonly playersService: PlayersService,
+    private readonly categoriesService: CategoriesService,
     @InjectModel('Challenge') private readonly challengeModel: Model<Challenge>,
   ) {}
 
@@ -35,10 +37,15 @@ export class ChallengesService {
       throw new BadRequestException('Requester must be in the match');
     }
 
+    await this.categoriesService.findPlayerCategory(
+      createChallengeDto.requester as unknown as string,
+    );
+
     // create the challenge
     const challenge = await this.challengeModel.create(createChallengeDto);
     challenge.category = 'challenge';
-    challenge.date = new Date();
+    challenge.challengeRequestDate = new Date();
+    challenge.status = ChallengeStatus.PENDING;
     return challenge.save();
   }
 

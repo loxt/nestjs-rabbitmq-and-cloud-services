@@ -11,6 +11,7 @@ export const ChallengeModel = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: 'Player' }],
     },
     category: String,
+    status: String,
   },
   {
     timestamps: true,
