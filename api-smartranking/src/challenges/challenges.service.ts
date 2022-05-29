@@ -43,7 +43,11 @@ export class ChallengesService {
   }
 
   findAll() {
-    return `This action returns all challenges`;
+    return this.challengeModel
+      .find()
+      .populate('players')
+      .populate('requester')
+      .exec();
   }
 
   findOne(id: number) {
