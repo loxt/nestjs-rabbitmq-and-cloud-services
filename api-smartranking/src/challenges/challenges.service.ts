@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PlayersService } from 'src/players/players.service';
@@ -8,8 +9,13 @@ import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Challenge, ChallengeStatus } from './interfaces/challenge.interface';
+import {
+  Challenge,
+  ChallengeStatus,
+  Match,
+} from './interfaces/challenge.interface';
 import { CategoriesService } from '../categories/categories.service';
+import { AssignMatchToChallengeDto } from './dto/assign-match-to-challenge.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -17,6 +23,7 @@ export class ChallengesService {
     private readonly playersService: PlayersService,
     private readonly categoriesService: CategoriesService,
     @InjectModel('Challenge') private readonly challengeModel: Model<Challenge>,
+    @InjectModel('Match') private readonly matchModel: Model<Match>,
   ) {}
 
   async create(createChallengeDto: CreateChallengeDto): Promise<Challenge> {
@@ -98,6 +105,51 @@ export class ChallengesService {
         },
       )
       .exec();
+  }
+
+  async assignMatchToChallenge(
+    id: string,
+    assignMatchToChallengeDto: AssignMatchToChallengeDto,
+  ): Promise<Challenge> {
+    const foundedChallenge = await this.challengeModel.findById(id).exec();
+
+    if (!foundedChallenge) {
+      throw new NotFoundException(`Challenge with id ${id} not found`);
+    }
+
+    const winnerFound = foundedChallenge.players.filter(
+      (player) => player._id === assignMatchToChallengeDto.winner,
+    );
+
+    if (!winnerFound) {
+      throw new BadRequestException(
+        `Winner with id ${assignMatchToChallengeDto.winner} is'nt in the challenge.`,
+      );
+    }
+
+    const match = await this.matchModel.create(assignMatchToChallengeDto);
+    match.category = foundedChallenge.category;
+    match.players = foundedChallenge.players;
+
+    const matchResult = await match.save();
+
+    foundedChallenge.status = ChallengeStatus.REALIZED;
+    foundedChallenge.match = matchResult._id as unknown as Match;
+
+    try {
+      return this.challengeModel
+        .findOneAndUpdate(
+          { _id: id },
+          { $set: foundedChallenge },
+          {
+            new: true,
+          },
+        )
+        .exec();
+    } catch (error) {
+      await this.challengeModel.deleteOne({ _id: matchResult._id }).exec();
+      throw new InternalServerErrorException();
+    }
   }
 
   async remove(id: string): Promise<void> {

@@ -14,6 +14,7 @@ import { ChallengesService } from './challenges.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { Challenge } from './interfaces/challenge.interface';
+import { AssignMatchToChallengeDto } from './dto/assign-match-to-challenge.dto';
 
 @Controller('api/v1/challenges')
 @UsePipes(ValidationPipe)
@@ -31,6 +32,17 @@ export class ChallengesController {
       return this.challengesService.findPlayerChallenges(playerId);
     }
     return this.challengesService.findAll();
+  }
+
+  @Post('/:challenge/match')
+  async assignMatchToChallenge(
+    @Body() assignMatchToChallengeDto: AssignMatchToChallengeDto,
+    @Param('challenge') id: string,
+  ): Promise<Challenge> {
+    return this.challengesService.assignMatchToChallenge(
+      id,
+      assignMatchToChallengeDto,
+    );
   }
 
   @Patch(':id')
