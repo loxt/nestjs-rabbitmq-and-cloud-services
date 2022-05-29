@@ -33,17 +33,12 @@ export class ChallengesController {
     return this.challengesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<Challenge> {
-    return this.challengesService.findOne(+id);
-  }
-
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateChallengeDto: UpdateChallengeDto,
   ): Promise<Challenge> {
-    return this.challengesService.update(+id, updateChallengeDto);
+    return this.challengesService.update(id, updateChallengeDto);
   }
 
   @Delete(':id')

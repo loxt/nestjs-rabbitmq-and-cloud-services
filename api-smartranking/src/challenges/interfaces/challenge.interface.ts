@@ -1,6 +1,7 @@
 import { Player } from '../../players/interfaces/player.interface';
 
 export interface Challenge extends Document {
+  challengeDate: Date;
   challengeRequestDate: Date;
   challengeResponseDate: Date;
   category: string;

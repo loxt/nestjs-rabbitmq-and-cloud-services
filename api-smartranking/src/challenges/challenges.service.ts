@@ -73,15 +73,31 @@ export class ChallengesService {
       .exec();
   }
 
-  findOne(id: number): Promise<Challenge> {
-    return {} as any;
-  }
-
-  update(
-    id: number,
+  async update(
+    id: string,
     updateChallengeDto: UpdateChallengeDto,
   ): Promise<Challenge> {
-    return {} as any;
+    const foundedChallenge = await this.challengeModel.findById(id).exec();
+
+    if (!foundedChallenge) {
+      throw new NotFoundException(`Challenge with id ${id} not found`);
+    }
+
+    if (updateChallengeDto.status) {
+      foundedChallenge.challengeResponseDate = new Date();
+    }
+    foundedChallenge.status = updateChallengeDto.status;
+    foundedChallenge.challengeDate = updateChallengeDto.challengeDate;
+
+    return this.challengeModel
+      .findOneAndUpdate(
+        { _id: id },
+        { $set: foundedChallenge },
+        {
+          new: true,
+        },
+      )
+      .exec();
   }
 
   async remove(id: string): Promise<void> {
