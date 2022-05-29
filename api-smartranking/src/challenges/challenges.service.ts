@@ -19,7 +19,7 @@ export class ChallengesService {
     @InjectModel('Challenge') private readonly challengeModel: Model<Challenge>,
   ) {}
 
-  async create(createChallengeDto: CreateChallengeDto) {
+  async create(createChallengeDto: CreateChallengeDto): Promise<Challenge> {
     // validate if players exists
     for (const player of createChallengeDto.players) {
       const foundedPlayer = await this.playersService.findOne(player._id);
@@ -55,7 +55,15 @@ export class ChallengesService {
     return challenge.save();
   }
 
-  findAll() {
+  findPlayerChallenges(playerId: string): Promise<Challenge[]> {
+    return this.challengeModel
+      .find({ requester: playerId })
+      .populate('players')
+      .populate('requester')
+      .exec();
+  }
+
+  findAll(): Promise<Challenge[]> {
     return this.challengeModel
       .find()
       .populate('players')
@@ -63,15 +71,18 @@ export class ChallengesService {
       .exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} challenge`;
+  findOne(id: number): Promise<Challenge> {
+    return {} as any;
   }
 
-  update(id: number, updateChallengeDto: UpdateChallengeDto) {
-    return `This action updates a #${id} challenge`;
+  update(
+    id: number,
+    updateChallengeDto: UpdateChallengeDto,
+  ): Promise<Challenge> {
+    return {} as any;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} challenge`;
+  remove(id: number): Promise<void> {
+    return {} as any;
   }
 }

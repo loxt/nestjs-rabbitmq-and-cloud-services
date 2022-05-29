@@ -12,6 +12,10 @@ export interface Challenge extends Document {
 
 export enum ChallengeStatus {
   PENDING = 'pending',
+  REALIZED = 'realized',
+  ACCEPTED = 'accepted',
+  REFUSED = 'refused',
+  CANCELED = 'canceled',
 }
 
 export interface Match extends Document {
