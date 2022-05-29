@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreatePlayerDto } from './dtos/create-player.dto';
 import { PlayersService } from './players.service';
-import { ValidatePlayerParamsPipe } from './pipes/validate-player-params.pipe';
+import { ValidateParamsPipe } from '../common/pipes/validate-params.pipe';
 import { Player } from './interfaces/player.interface';
 import { UpdatePlayerDto } from './dtos/update-player.dto';
 
@@ -31,24 +31,20 @@ export class PlayersController {
   }
 
   @Get('/:id')
-  async findOne(
-    @Param('id', ValidatePlayerParamsPipe) id: string,
-  ): Promise<Player> {
+  async findOne(@Param('id', ValidateParamsPipe) id: string): Promise<Player> {
     return this.playersService.findOne(id);
   }
 
   @Put('/:id')
   async update(
     @Body() updatePlayerDto: UpdatePlayerDto,
-    @Param('id', ValidatePlayerParamsPipe) id: string,
+    @Param('id', ValidateParamsPipe) id: string,
   ): Promise<Player> {
     return this.playersService.update(id, updatePlayerDto);
   }
 
   @Delete('/:id')
-  async delete(
-    @Param('id', ValidatePlayerParamsPipe) id: string,
-  ): Promise<any> {
+  async delete(@Param('id', ValidateParamsPipe) id: string): Promise<any> {
     return this.playersService.delete(id);
   }
 }
