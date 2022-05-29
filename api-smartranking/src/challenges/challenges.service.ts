@@ -60,6 +60,7 @@ export class ChallengesService {
       .find({ requester: playerId })
       .populate('players')
       .populate('requester')
+      .populate('match')
       .exec();
   }
 
@@ -68,6 +69,7 @@ export class ChallengesService {
       .find()
       .populate('players')
       .populate('requester')
+      .populate('match')
       .exec();
   }
 
@@ -82,7 +84,16 @@ export class ChallengesService {
     return {} as any;
   }
 
-  remove(id: number): Promise<void> {
-    return {} as any;
+  async remove(id: string): Promise<void> {
+    const foundedChallenge = await this.challengeModel.findById(id).exec();
+
+    if (!foundedChallenge) {
+      throw new NotFoundException(`Challenge with id ${id} not found`);
+    }
+
+    foundedChallenge.status = ChallengeStatus.CANCELED;
+    await this.challengeModel
+      .findOneAndUpdate({ _id: id }, { $set: foundedChallenge })
+      .exec();
   }
 }

@@ -21,6 +21,7 @@ export enum ChallengeStatus {
 export interface Match extends Document {
   category: string;
   players: Player[];
+  winner: Player;
   result: MatchResult[];
 }
 
