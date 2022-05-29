@@ -145,6 +145,7 @@ export class ChallengesService {
             new: true,
           },
         )
+        .populate('match')
         .exec();
     } catch (error) {
       await this.challengeModel.deleteOne({ _id: matchResult._id }).exec();

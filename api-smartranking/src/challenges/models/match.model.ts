@@ -10,6 +10,11 @@ export const MatchModel = new Schema(
     players: {
       type: [{ type: Schema.Types.ObjectId, ref: 'Player' }],
     },
+    result: [
+      {
+        set: String,
+      },
+    ],
   },
   {
     timestamps: true,
