@@ -33,7 +33,7 @@ export class AppController {
   @Post('categories')
   createCategory(
     @Body() createCategoryDto: CreateCategoryDto,
-  ): Observable<any> {
+  ): Observable<CreateCategoryDto> {
     return this.clientAdminBackend.emit('create-category', createCategoryDto);
   }
 }
