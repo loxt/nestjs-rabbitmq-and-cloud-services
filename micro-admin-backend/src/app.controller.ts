@@ -1,6 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { AppService } from './app.service';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { Category } from './interfaces/categories/category.interface';
 
 @Controller()
@@ -15,7 +15,7 @@ export class AppController {
     return this.appService.createCategory(category);
   }
 
-  @EventPattern('find-categories')
+  @MessagePattern('find-categories')
   async findCategories(@Payload() id: string) {
     if (id) {
       return this.appService.findById(id);
