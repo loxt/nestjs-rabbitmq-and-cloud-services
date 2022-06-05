@@ -23,4 +23,12 @@ export class AppService {
       throw new RpcException(error.message);
     }
   }
+
+  async findCategories() {
+    return this.categoryModel.find();
+  }
+
+  async findById(id: string) {
+    return this.categoryModel.findById(id);
+  }
 }

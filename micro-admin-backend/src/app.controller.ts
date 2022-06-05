@@ -14,4 +14,12 @@ export class AppController {
     this.logger.log(`category: ${JSON.stringify(category)}`);
     return this.appService.createCategory(category);
   }
+
+  @EventPattern('find-categories')
+  async findCategories(@Payload() id: string) {
+    if (id) {
+      return this.appService.findById(id);
+    }
+    return this.appService.findCategories();
+  }
 }

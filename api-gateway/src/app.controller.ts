@@ -2,12 +2,11 @@ import {
   Body,
   Controller,
   Get,
-  Logger,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AppService } from './app.service';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -19,8 +18,6 @@ import { Observable } from 'rxjs';
 @Controller('api/v1')
 @UsePipes(ValidationPipe)
 export class AppController {
-  private logger: Logger = new Logger(AppController.name);
-
   private clientAdminBackend: ClientProxy = ClientProxyFactory.create({
     transport: Transport.RMQ,
     options: {
@@ -28,12 +25,14 @@ export class AppController {
       queue: 'admin-backend',
     },
   });
-  constructor(private readonly appService: AppService) {}
 
   @Post('categories')
-  createCategory(
-    @Body() createCategoryDto: CreateCategoryDto,
-  ): Observable<CreateCategoryDto> {
-    return this.clientAdminBackend.emit('create-category', createCategoryDto);
+  createCategory(@Body() createCategoryDto: CreateCategoryDto): void {
+    this.clientAdminBackend.emit('create-category', createCategoryDto);
+  }
+
+  @Get('categories')
+  findCategories(@Query('id') id = ''): Observable<any> {
+    return this.clientAdminBackend.send('find-categories', id);
   }
 }
