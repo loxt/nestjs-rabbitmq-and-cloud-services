@@ -33,6 +33,11 @@ export class AppService {
   }
 
   async updateCategory(id: string, category: Category) {
-    return this.categoryModel.findByIdAndUpdate(id, category, { new: true });
+    try {
+      await this.categoryModel.findByIdAndUpdate(id, category, { new: true });
+    } catch (error) {
+      this.logger.error(`error: ${JSON.stringify(error.message)}`);
+      throw new RpcException(error.message);
+    }
   }
 }
