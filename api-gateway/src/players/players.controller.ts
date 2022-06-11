@@ -6,6 +6,8 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ import { ValidateParamsPipe } from '../common/pipes/validate-params.pipe';
 import { UpdatePlayerDto } from './dtos/update-player.dto';
 import { ClientProxySmartRanking } from '../proxyrmq/client-proxy';
 import { Observable } from 'rxjs';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/v1/players')
 @UsePipes(ValidationPipe)
@@ -44,5 +47,11 @@ export class PlayersController {
       id,
       player: updatePlayerDto,
     });
+  }
+
+  @Post('/:id/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file, @Param('id') id: string) {
+    console.log(file);
   }
 }
