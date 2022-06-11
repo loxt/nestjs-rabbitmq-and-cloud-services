@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -17,11 +18,13 @@ import { UpdatePlayerDto } from './dtos/update-player.dto';
 import { ClientProxySmartRanking } from '../proxyrmq/client-proxy';
 import { Observable } from 'rxjs';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AwsService } from '../aws/aws.service';
 
 @Controller('api/v1/players')
 @UsePipes(ValidationPipe)
 export class PlayersController {
   constructor(
+    private readonly awsService: AwsService,
     private readonly clientProxySmartRanking: ClientProxySmartRanking,
   ) {}
 
@@ -52,6 +55,19 @@ export class PlayersController {
   @Post('/:id/upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file, @Param('id') id: string) {
-    console.log(file);
+    const player = await this.clientAdminBackend
+      .send('find-players', id)
+      .toPromise();
+
+    if (!player) {
+      throw new BadRequestException('Player not found');
+    }
+
+    const uploadedPlayerPhotoUrl = await this.awsService.uploadFile(file, id);
+
+    const updatePlayerDto: UpdatePlayerDto = {
+      photoUrl: uploadedPlayerPhotoUrl,
+    };
+    return updatePlayerDto;
   }
 }

@@ -40,4 +40,22 @@ export class AppService {
       throw new RpcException(error.message);
     }
   }
+
+  async findPlayers(): Promise<Player[]> {
+    try {
+      return await this.playerModel.find().populate('category').exec();
+    } catch (error) {
+      this.logger.error(`error: ${JSON.stringify(error.message)}`);
+      throw new RpcException(error.message);
+    }
+  }
+
+  async findPlayerById(id: string): Promise<Player> {
+    try {
+      return await this.playerModel.findById(id).populate('category').exec();
+    } catch (error) {
+      this.logger.error(`error: ${JSON.stringify(error.message)}`);
+      throw new RpcException(error.message);
+    }
+  }
 }

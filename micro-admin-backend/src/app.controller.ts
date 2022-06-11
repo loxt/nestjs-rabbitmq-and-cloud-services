@@ -71,4 +71,19 @@ export class AppController {
       }
     }
   }
+
+  @MessagePattern('find-players')
+  async findPlayers(@Payload() id: string, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      if (id) {
+        return await this.appService.findPlayerById(id);
+      } else {
+        return await this.appService.findPlayers();
+      }
+    } finally {
+      await channel.ack(originalMsg);
+    }
+  }
 }
