@@ -63,8 +63,12 @@ export class AppController {
       const category: Category = data.category;
       await this.appService.updateCategory(id, category);
       await channel.ack(originalMsg);
-    } finally {
-      await channel.ack(originalMsg);
+    } catch (error) {
+      if (ackErrors.some((ackError) => error.message.includes(ackError))) {
+        await channel.ack(originalMsg);
+      } else {
+        throw error;
+      }
     }
   }
 }
