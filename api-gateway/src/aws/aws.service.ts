@@ -6,8 +6,8 @@ export class AwsService {
   public async uploadFile(file: any, id: string) {
     const s3 = new AWS.S3({
       region: 'us-east-1',
-      accessKeyId: 'AKIASP6GCNZHHUVHNMFC',
-      secretAccessKey: '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',
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     });
 
     const fileTypeExtension = file.originalname.split('.')[1];
