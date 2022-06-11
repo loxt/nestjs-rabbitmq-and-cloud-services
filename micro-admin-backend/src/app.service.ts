@@ -31,4 +31,8 @@ export class AppService {
   async findById(id: string) {
     return this.categoryModel.findById(id);
   }
+
+  async updateCategory(id: string, category: Category) {
+    return this.categoryModel.findByIdAndUpdate(id, category, { new: true });
+  }
 }

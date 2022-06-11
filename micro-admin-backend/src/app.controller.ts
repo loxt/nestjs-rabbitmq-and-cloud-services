@@ -38,10 +38,33 @@ export class AppController {
   }
 
   @MessagePattern('find-categories')
-  async findCategories(@Payload() id: string) {
-    if (id) {
-      return this.appService.findById(id);
+  async findCategories(@Payload() id: string, @Ctx() context: RmqContext) {
+    const channel = await context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    try {
+      if (id) {
+        return this.appService.findById(id);
+      } else {
+        return this.appService.findCategories();
+      }
+    } finally {
+      await channel.ack(originalMsg);
     }
-    return this.appService.findCategories();
+  }
+
+  @MessagePattern('update-category')
+  async updateCategory(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = await context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    try {
+      const id: string = data.id;
+      const category: Category = data.category;
+      await this.appService.updateCategory(id, category);
+      await channel.ack(originalMsg);
+    } finally {
+      await channel.ack(originalMsg);
+    }
   }
 }
