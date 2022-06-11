@@ -4,12 +4,14 @@ import { CategoryModel } from './interfaces/categories/category.model';
 import { PlayerModel } from './interfaces/players/player.model';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://admin:123@cluster0.rvrs2ta.mongodb.net/?retryWrites=true&w=majority',
-    ),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     MongooseModule.forFeature([
       {
         name: 'Category',

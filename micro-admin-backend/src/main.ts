@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<RmqOptions>(AppModule, {
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://user:QtJFBU8LdY2P@3.95.238.78/smartranking'],
+      urls: [process.env.RMQ_URL],
       noAck: false,
       queue: 'admin-backend',
     },
