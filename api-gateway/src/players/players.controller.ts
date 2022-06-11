@@ -66,8 +66,13 @@ export class PlayersController {
     const uploadedPlayerPhotoUrl = await this.awsService.uploadFile(file, id);
 
     const updatePlayerDto: UpdatePlayerDto = {
-      photoUrl: uploadedPlayerPhotoUrl,
+      photoUrl: uploadedPlayerPhotoUrl.url,
     };
-    return updatePlayerDto;
+
+    await this.clientAdminBackend.emit('update-player', {
+      id,
+      player: updatePlayerDto,
+    });
+    return this.clientAdminBackend.send('find-players', id);
   }
 }

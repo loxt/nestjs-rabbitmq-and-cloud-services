@@ -58,4 +58,15 @@ export class AppService {
       throw new RpcException(error.message);
     }
   }
+
+  async updatePlayer(id: string, player: Player): Promise<void> {
+    try {
+      await this.playerModel
+        .findByIdAndUpdate(id, { $set: player }, { new: true })
+        .exec();
+    } catch (error) {
+      this.logger.error(`error: ${JSON.stringify(error.message)}`);
+      throw new RpcException(error.message);
+    }
+  }
 }

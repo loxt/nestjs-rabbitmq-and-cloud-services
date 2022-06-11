@@ -8,6 +8,7 @@ import {
   RmqContext,
 } from '@nestjs/microservices';
 import { Category } from './interfaces/categories/category.interface';
+import { Player } from './interfaces/players/player.interface';
 
 const ackErrors: string[] = ['E11000'];
 
@@ -84,6 +85,24 @@ export class AppController {
       }
     } finally {
       await channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('update-player')
+  async updatePlayer(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const id: string = data.id;
+      const player: Player = data.player;
+      await this.appService.updatePlayer(id, player);
+      await channel.ack(originalMsg);
+    } catch (error) {
+      if (ackErrors.some((ackError) => error.message.includes(ackError))) {
+        await channel.ack(originalMsg);
+      } else {
+        throw error;
+      }
     }
   }
 }
